@@ -16,8 +16,9 @@ void initializeAdaptor(){
 void addKinectDevicetoHW(imaqkit::IHardwareInfo *hwInfo, IKinectSensor *kinect, int sensorId);
 
 void getAvailHW(imaqkit::IHardwareInfo* hardwareInfo){
-
-	IKinectSensorCollection *kinectCollection;
+	
+	//Multiple sensor support was removed from release sdk
+	/*IKinectSensorCollection *kinectCollection;
 
 	if (GetKinectSensorCollection(&kinectCollection) != S_OK) {
 		imaqkit::adaptorError(nullptr, "KinectV2Imaq:DeviceEnumeration", "Unable to get kinect sensor collection.");
@@ -35,13 +36,21 @@ void getAvailHW(imaqkit::IHardwareInfo* hardwareInfo){
 	while (kinectList->GetNext(&kinectSensor) == S_OK) {
 		//Add sensor devices
 		addKinectDevicetoHW(hardwareInfo, kinectSensor, deviceCount++);
+	}*/
+
+	IKinectSensor* sensor;
+	if (FAILED(GetDefaultKinectSensor(&sensor))) {
+		imaqkit::adaptorError(nullptr, "KinectV2Imaq:DeviceEnumeration", "Unable to get kinect sensor.");
+		return;
 	}
+
+	addKinectDevicetoHW(hardwareInfo, sensor, 1);
 
 }
 
 void addKinectDevicetoHW(imaqkit::IHardwareInfo *hwInfo, IKinectSensor *kinect, int sensorId) {
 
-	int idBufferSize = 50;
+	int idBufferSize = 256;
 	WCHAR wid[50];
 	memset(wid, 0, 50 * sizeof(WCHAR));
 
